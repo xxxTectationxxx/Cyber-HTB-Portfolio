@@ -1,4 +1,6 @@
 # 🚩 HackTheBox: Cap - Write-up
+<img width="1413" height="158" alt="image" src="https://github.com/user-attachments/assets/3de35843-e3fc-4607-8e5a-a51f45d27ad7" />
+
 
 **Date:** 15 January 2026  
 **Machine:** Cap  
